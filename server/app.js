@@ -62,7 +62,7 @@ app.get('/api/feedback/:slug', (req, res, next) => {
 
     return res.status(200).json({ message: 'feedback retrieved successfully', data: feedback });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 });
 
