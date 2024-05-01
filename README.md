@@ -73,7 +73,7 @@ Now, we can just use a single file as embeddable widget.
 Clone the repository
 
 ```bash
-$ git clone https://github.com/clevyr/feedback.git
+$ git clone https://github.com/wajeht/embeddable-vue-component.git
 ```
 
 Copy `.env.example` to `.env`
