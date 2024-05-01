@@ -48,26 +48,7 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/live.js', (req, res) => {
-  try {
-
-    if (!isDevelopmentEnvironment) throw new NotFoundError('not found');
-
-    const liveJs = path.resolve(path.join(process.cwd(), 'public', 'live.js'));
-    return res.status(200).set('Content-Type', 'application/javascript').sendFile(liveJs);
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.get('/favicon.ico', (req, res) => {
-  try {
-    const favicon = path.resolve(path.join(process.cwd(), 'public', 'favicon.ico'));
-    return res.status(200).set('Content-Type', 'image/x-icon').sendFile(favicon);
-  } catch (error) {
-    next(error);
-  }
-});
+app.use(express.static(path.resolve(path.join(process.cwd(), 'public')), { maxAge: '24h' }));
 
 app.get('/api/feedback/:slug', (req, res, next) => {
   try {
