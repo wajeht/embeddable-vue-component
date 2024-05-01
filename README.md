@@ -61,7 +61,7 @@ app.get('/feedback/:slug/widget.js', async (req, res, next) => {
 });
 ```
 
-Now, we can just use a single file as embeddable widget;
+Now, we can just use a single file as embeddable widget.
 
 ```javascript
 <script src="/feedback/test/widget.js"></script>
@@ -92,12 +92,6 @@ Run development server
 
 ```bash
 $ npm run dev:build:watch
-```
-
-Test the application
-
-```bash
-$ npm run test
 ```
 
 Look into `npm` scripts inside `package.json` for more information
