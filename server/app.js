@@ -1,5 +1,10 @@
+import dotenv from 'dotenv';
 import path from 'path';
 import express from 'express';
+
+dotenv.config({ path: path.resolve(path.join(process.cwd(), '.env')) });
+
+const isDevelopmentEnvironment = process.env.NODE_ENV === 'development'
 
 class NotFoundError extends Error {
   constructor(message) {
@@ -149,6 +154,8 @@ app.get('/feedback/:slug/widget.js', async (req, res, next) => {
 });
 
 app.get('/', (req, res) => {
+  const liveJs = isDevelopmentEnvironment ? '<script src="/live.js"></script>' : '';
+
   try {
     const html = `
     <!DOCTYPE html>
@@ -157,7 +164,7 @@ app.get('/', (req, res) => {
         <meta charset="UTF-8">
         <title>Feedback</title>
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
-        <script src="/live.js"></script>
+        ${liveJs}
       </head>
       <body>
         <h1>Hello World!</h1>
