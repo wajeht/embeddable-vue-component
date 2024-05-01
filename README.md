@@ -95,3 +95,7 @@ $ npm run dev:build:watch
 ```
 
 Look into `npm` scripts inside `package.json` for more information
+
+# © License
+
+Distributed under the MIT License © wajeht. See [LICENSE](./LICENSE) for more information.
