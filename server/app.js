@@ -50,6 +50,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get('/live.js', (req, res) => {
   try {
+
+    if (!isDevelopmentEnvironment) throw new NotFoundError('not found');
+
     const liveJs = path.resolve(path.join(process.cwd(), 'public', 'live.js'));
     return res.status(200).set('Content-Type', 'application/javascript').sendFile(liveJs);
   } catch (error) {
