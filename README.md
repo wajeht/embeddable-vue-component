@@ -20,7 +20,7 @@ We are using Vue to create a custom Web Component and compile it into a single J
 
 ```html
 <feedback-widget slug="test" />
-<script type="module" src="/api/tenant/slug/widget.umd.js"></script>
+<script type="module" src="/tenant/:slug/widget.umd.js"></script>
 ```
 
 This can be further extended by writing embeddable JavaScript on the fly, eliminating the need to create multiple separate files.
@@ -64,7 +64,7 @@ app.get('/feedback/:slug/widget.js', async (req, res, next) => {
 Now, we can just use a single file as embeddable widget.
 
 ```javascript
-<script src="/feedback/test/widget.js"></script>
+<script src="/feedback/:slug/widget.js"></script>
 ```
 
 
