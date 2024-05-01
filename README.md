@@ -1,4 +1,4 @@
-# 😀 Feedback
+# 😀 Embeddable Vue Component
 Embeddable widget using Vue components.
 
 # 📕 Code Structure
