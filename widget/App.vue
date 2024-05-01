@@ -75,7 +75,7 @@ const computedSubmitText = computed(() => {
 </script>
 
 <template>
-  <div v-if="states.enable" class="relative">
+  <div v-if="states.enable" :class="{ 'hidden': !states.enable }" class="relative">
     <!-- Button to open/close the feedback form -->
     <button @click="toggle"
       class="fixed right-10 bottom-10 p-5 border bg-white hover:bg-blue-500 shadow-lg rounded-full w-[50px] h-[50px] flex justify-center items-center">
@@ -100,11 +100,7 @@ const computedSubmitText = computed(() => {
         <span class="font-semibold">Rate your experience:</span>
 
         <select v-model="states.rating" class="p-2 rounded-md" :disabled="states.submitting">
-          <option value="1">1 Star</option>
-          <option value="2">2 Stars</option>
-          <option value="3">3 Stars</option>
-          <option value="4">4 Stars</option>
-          <option value="5">5 Stars</option>
+          <option v-for="star in 5" :key="star" :value="star">{{ star }}</option>
         </select>
       </div>
 
