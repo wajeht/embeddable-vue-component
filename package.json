@@ -5,7 +5,7 @@
   "description": "feedback",
   "type": "module",
   "scripts": {
-    "start": "npm run build && node ./server/server.js",
+    "start": "node ./server/server.js",
     "dev": "concurrently --kill-others --names \"WIDGET,SERVER\" -c \"bgYellow.black,bgGreen.black,bgBlue.white\" \"npm run dev:widget\" \"npm run dev:server\"",
     "dev:build:watch": "concurrently --kill-others --names \"WIDGET,SERVER\" -c \"bgYellow.black,bgGreen.black,bgBlue.white\" \"npm run dev:widget:watch\" \"npm run dev:server\"",
     "dev:server": "nodemon ./server/server.js",
@@ -23,8 +23,11 @@
   "author": "wajeht",
   "license": "MIT",
   "dependencies": {
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "helmet": "^7.1.0",
     "vue": "^3.4.21"
   },
   "devDependencies": {
@@ -35,6 +38,6 @@
     "postcss": "^8.4.38",
     "prettier": "^3.2.5",
     "tailwindcss": "^3.4.3",
-    "vite": "^5.2.10"
+    "vite": "^5.2.11"
   }
 }

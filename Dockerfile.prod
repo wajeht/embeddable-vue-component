@@ -1,0 +1,21 @@
+FROM node:20.6.1-alpine
+
+WORKDIR /usr/src/app
+
+COPY ./package.json ./
+COPY ./package-lock.json ./
+
+RUN apk add curl
+RUN npm install
+
+COPY ./ .
+
+ENV VITE_SERVER_URL "https://embeddable-vue-component.jaw.dev"
+
+RUN npm run build
+
+EXPOSE 80
+
+HEALTHCHECK CMD curl -f http://localhost:80/healthz || exit 1
+
+CMD ["npm", "run", "start"]

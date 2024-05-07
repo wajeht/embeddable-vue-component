@@ -1,7 +1,9 @@
 # 😀 Embeddable Vue Component
+
 Embeddable widget using Vue components.
 
 # 📕 Code Structure
+
 ```
 ├── /node_modules
 ├── /dist          # compiled vue code goes here
@@ -67,6 +69,11 @@ Now, we can just use a single file as embeddable widget.
 <script src="/feedback/:slug/widget.js"></script>
 ```
 
+Visit the following url for a demo.
+
+```
+https://codepen.io/entiresolutionprepare/pen/PogMOGj
+```
 
 # 💻 Development
 

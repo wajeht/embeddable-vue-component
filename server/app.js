@@ -1,10 +1,13 @@
 import dotenv from 'dotenv';
+import helmet from 'helmet';
+import compression from 'compression';
 import path from 'path';
 import express from 'express';
+import cors from 'cors';
 
 dotenv.config({ path: path.resolve(path.join(process.cwd(), '.env')) });
 
-const isDevelopmentEnvironment = process.env.NODE_ENV === 'development'
+const isDevelopmentEnvironment = process.env.NODE_ENV === 'development';
 
 class NotFoundError extends Error {
   constructor(message) {
@@ -30,8 +33,8 @@ class ValidationError extends Error {
 const db = [
   {
     id: 1,
-    slug: 'test',
-    allowed_domains: ['localhost'],
+    slug: 'demo',
+    allowed_domains: ['http://localhost/', 'https://embeddable-vue-component.jaw.dev/'],
     submissions: [
       {
         id: 1,
@@ -40,9 +43,38 @@ const db = [
       },
     ],
   },
+  {
+    id: 2,
+    slug: 'code-pen',
+    allowed_domains: ['https://cdpn.io/'],
+    submissions: [
+      {
+        id: 1,
+        rating: 5,
+        feedback: 'so good',
+      },
+    ],
+  },
 ];
 
 const app = express();
+
+app.use(cors());
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+    referrerPolicy: { policy: 'same-origin' },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        connectSrc: ["'self'", 'https://embeddable-vue-component.jaw.dev'],
+      },
+    },
+  }),
+);
+
+app.use(compression());
 
 app.use(express.json());
 
@@ -81,6 +113,8 @@ app.post('/api/feedback/:slug', (req, res, next) => {
 
     if (!record) throw new NotFoundError(`no record found for slug: ${slug}`);
 
+    if (!record.allowed_domains.includes(req.headers.referer)) throw new UnauthorizeError('forbidden');
+
     const submission = {
       id: record.submissions.length + 1,
       rating: parseInt(rating),
@@ -95,6 +129,10 @@ app.post('/api/feedback/:slug', (req, res, next) => {
   }
 });
 
+app.get('/healthz', (req, res) => {
+  return res.status(200).send('<h1>ok</h1>');
+});
+
 app.get('/feedback/:slug/widget.js', async (req, res, next) => {
   try {
     const slug = req.params.slug;
@@ -105,7 +143,7 @@ app.get('/feedback/:slug/widget.js', async (req, res, next) => {
 
     if (!feedback) throw new NotFoundError('not found');
 
-    if (!feedback.allowed_domains.includes(req.hostname)) throw new UnauthorizeError('forbidden');
+    if (!feedback.allowed_domains.includes(req.headers.referer)) throw new UnauthorizeError('forbidden');
 
     if (req.query.embed === 'true') {
       const widget = path.resolve(path.join(process.cwd(), 'dist', 'widget.umd.js'));
@@ -116,6 +154,9 @@ app.get('/feedback/:slug/widget.js', async (req, res, next) => {
         .sendFile(widget);
     }
 
+    const protocol = req.hostname.includes('localhost') ? 'http://' : 'https://';
+    const port = req.hostname.includes('localhost') ? `:${process.env.PORT}` : '';
+
     const javascript = `
       (function() {
         const feedbackWidget = document.createElement('feedback-widget');
@@ -123,7 +164,7 @@ app.get('/feedback/:slug/widget.js', async (req, res, next) => {
         document.body.appendChild(feedbackWidget);
 
         const script = document.createElement('script');
-        script.src = '/feedback/${slug}/widget.js?embed=true';
+        script.src = '${protocol}${req.hostname}${port}/feedback/${slug}/widget.js?embed=true';
         document.body.appendChild(script);
       })();
     `;
@@ -139,6 +180,9 @@ app.get('/feedback/:slug/widget.js', async (req, res, next) => {
 
 app.get('/', (req, res) => {
   const liveJs = isDevelopmentEnvironment ? '<script src="/live.js"></script>' : '';
+
+  const protocol = req.hostname.includes('localhost') ? 'http://' : 'https://';
+  const port = req.hostname.includes('localhost') ? `:${process.env.PORT}` : '';
 
   try {
     const html = `
@@ -156,10 +200,10 @@ app.get('/', (req, res) => {
         <p>Put the following code into body tag of the html</p>
 
         <div style="background-color: #f5f5f5; width: fit-content; border-radius: 5px; padding: 20px;">
-          &lt;script src=&quot;http://localhost/feedback/&lt;slug/&gt;/widget.js&quot;&gt;&lt;/script&gt;
+          &lt;script src=&quot;${protocol}${req.hostname}${port}/feedback/&lt;slug/&gt;/widget.js&quot;&gt;&lt;/script&gt;
         </div>
 
-        <script src="/feedback/test/widget.js"></script>
+        <script src="${protocol}${req.hostname}${port}/feedback/demo/widget.js"></script>
       </body>
     </html>`;
 

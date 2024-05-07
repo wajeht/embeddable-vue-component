@@ -1,6 +1,5 @@
 <script setup>
 import { reactive, computed, onBeforeMount } from 'vue';
-
 const props = defineProps({
   slug: {
     type: String,
@@ -9,6 +8,7 @@ const props = defineProps({
 });
 
 const states = reactive({
+  url: import.meta.MODE === 'development' ? '' : import.meta.env.VITE_SERVER_URL,
   enable: false,
   submitting: false,
   open: false,
@@ -24,7 +24,7 @@ function toggle() {
 
 onBeforeMount(async () => {
   try {
-    const res = await fetch(`/api/feedback/${props.slug}`);
+    const res = await fetch(`${states.url}/api/feedback/${props.slug}`);
     if (res.ok && props.slug) {
       states.enable = true;
     }
@@ -39,7 +39,7 @@ async function submit() {
   states.success = '';
 
   try {
-    const res = await fetch(`/api/feedback/${props.slug}`, {
+    const res = await fetch(`${states.url}/api/feedback/${props.slug}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -75,16 +75,20 @@ const computedSubmitText = computed(() => {
 </script>
 
 <template>
-  <div v-if="states.enable" :class="{ 'hidden': !states.enable }" class="relative">
+  <div v-if="states.enable" :class="{ hidden: !states.enable }" class="relative">
     <!-- Button to open/close the feedback form -->
-    <button @click="toggle"
-      class="fixed right-10 bottom-10 p-5 border bg-white hover:bg-blue-500 shadow-lg rounded-full w-[50px] h-[50px] flex justify-center items-center">
+    <button
+      @click="toggle"
+      class="fixed right-10 bottom-10 p-5 border bg-white hover:bg-blue-500 shadow-lg rounded-full w-[50px] h-[50px] flex justify-center items-center"
+    >
       😀
     </button>
 
     <!-- Feedback form with select dropdown for star rating and text feedback -->
-    <div v-if="states.open"
-      class="fixed right-10 bottom-28 p-5 border bg-white shadow-lg rounded-md w-[300px] h-auto flex flex-col gap-5">
+    <div
+      v-if="states.open"
+      class="fixed right-10 bottom-28 p-5 border bg-white shadow-lg rounded-md w-[300px] h-auto flex flex-col gap-5"
+    >
       <!-- Error message -->
       <div v-if="states.error" class="bg-red-100 p-5 rounded-md flex flex-col gap-2 border border-red-200">
         {{ states.error }}
@@ -107,13 +111,22 @@ const computedSubmitText = computed(() => {
       <!-- Text Feedback -->
       <div v-if="!states.success" class="bg-neutral-100 p-5 rounded-md flex flex-col gap-2">
         <label class="font-semibold" for="feedback">Your feedback:</label>
-        <textarea id="feedback" v-model="states.feedback" class="w-full p-3 min-h-10 rounded-md"
-          placeholder="Tell us about your experience..." :disabled="states.submitting"></textarea>
+        <textarea
+          id="feedback"
+          v-model="states.feedback"
+          class="w-full p-3 min-h-10 rounded-md"
+          placeholder="Tell us about your experience..."
+          :disabled="states.submitting"
+        ></textarea>
       </div>
 
       <!-- Submit Button -->
-      <button v-if="!states.success" @click="submit" class="bg-blue-500 text-white p-3 rounded"
-        :disabled="states.submitting">
+      <button
+        v-if="!states.success"
+        @click="submit"
+        class="bg-blue-500 text-white p-3 rounded"
+        :disabled="states.submitting"
+      >
         {{ computedSubmitText }}
       </button>
     </div>
